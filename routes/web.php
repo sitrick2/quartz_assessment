@@ -11,6 +11,8 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::post('/quiz', 'QuizController@store');
+Route::patch('/quiz/{quiz}', 'QuizController@update');
+Route::delete('/quiz/{quiz}', 'QuizController@destroy');
+
+Route::patch('/question/{question}', 'QuestionController@update');
