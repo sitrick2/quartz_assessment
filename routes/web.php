@@ -10,7 +10,9 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('/', 'HomeController@index');
 
+Route::get('/quiz', 'QuizController@show');
 Route::post('/quiz', 'QuizController@store');
 Route::patch('/quiz/{quiz}', 'QuizController@update');
 Route::delete('/quiz/{quiz}', 'QuizController@destroy');

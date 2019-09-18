@@ -44,6 +44,17 @@ class QuizManagementTest extends TestCase
     }
 
     /** @test */
+    public function a_quiz_can_be_retrieved() :void
+    {
+        $quiz = $this->initializeTestQuiz();
+
+        $response = $this->get('/quiz?quiz_id=' . $quiz->id);
+
+        $foundQuiz = Quiz::find(json_decode($response->baseResponse->getContent(), true)['id']);
+
+        $this->assertEquals($quiz->id, $foundQuiz->id);
+    }
+    /** @test */
     public function a_quiz_requires_a_title_on_update() :void
     {
         $quiz = $this->initializeTestQuiz();

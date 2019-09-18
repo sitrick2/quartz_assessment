@@ -4,11 +4,12 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Laravel</title>
+        <title>Quartz Assessment Quiz</title>
 
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
-
+        <!-- jQuery import -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
         <!-- Styles -->
         <style>
             html, body {
@@ -21,7 +22,7 @@
             }
 
             .full-height {
-                height: 100vh;
+                margin-top: 100px;
             }
 
             .flex-center {
@@ -61,6 +62,67 @@
             .m-b-md {
                 margin-bottom: 30px;
             }
+
+            .question {
+                color: #636b6f;
+                padding: 0 25px;
+                font-size: 35px;
+                font-weight: 600;
+                letter-spacing: .1rem;
+                text-decoration: none;
+                text-transform: uppercase;
+            }
+
+            .card {
+                color: #636b6f;
+                font-size: 20px;
+                font-weight: 600;
+                letter-spacing: .1rem;
+                text-decoration: none;
+                border: 1px solid #636b6f;
+                border-radius: 5px;
+                margin-top: 50px;
+                margin-bottom: 20px;
+                padding: 20px;
+            }
+
+            .card:hover {
+                background-color: #636b6f;
+                color: white;
+            }
+
+            .hidden {
+                visibility: hidden;
+            }
+
+            .card:active {
+                background-color: gray;
+            }
+
+            .left {
+                float: left;
+                width: 40%;
+            }
+
+            .right {
+                float: right;
+                width: 40%;
+            }
+
+            .start-quiz {
+                margin-top: 100px;
+            }
+
+            .results-text {
+                color: #636b6f;
+                font-size: 20px;
+                font-weight: 600;
+                letter-spacing: .1rem;
+                text-decoration: none;
+                margin-bottom: 20px;
+                padding: 20px;
+                display: inherit;
+            }
         </style>
     </head>
     <body>
@@ -81,20 +143,109 @@
 
             <div class="content">
                 <div class="title m-b-md">
-                    Laravel
+                    Quartz Assessment Quiz
                 </div>
 
-                <div class="links">
-                    <a href="https://laravel.com/docs">Docs</a>
-                    <a href="https://laracasts.com">Laracasts</a>
-                    <a href="https://laravel-news.com">News</a>
-                    <a href="https://blog.laravel.com">Blog</a>
-                    <a href="https://nova.laravel.com">Nova</a>
-                    <a href="https://forge.laravel.com">Forge</a>
-                    <a href="https://vapor.laravel.com">Vapor</a>
-                    <a href="https://github.com/laravel/laravel">GitHub</a>
+                <div class="question">
+                    Test Question
+                </div>
+
+                <div class="start-quiz">
+                    <div class="card">
+                        <span>Start Quiz</span>
+                    </div>
+                </div>
+
+                <div class="answers hidden">
+                    <div class="card answer-card left">
+                        <span class="answer-text">First Answer</span>
+                    </div>
+                    <div class="card answer-card right">
+                        <span class="answer-text">Second Answer</span>
+                    </div>
+                    <div class="card answer-card left">
+                        <span class="answer-text">Third Answer</span>
+                    </div>
+                    <div class="card answer-card right">
+                        <span class="answer-text">Fourth Answer</span>
+                    </div>
+                </div>
+                <div class="results hidden">
+                    <span class="results-text"></span>
                 </div>
             </div>
         </div>
     </body>
 </html>
+
+<script>
+    let state = {
+        quiz_id: null,
+        questions: null,
+        currentQuestion: 0,
+        totalQuestions: null,
+        totalCorrectAnswers: null
+    };
+
+    $( ".start-quiz" ).click(function() {
+        let data = $.getValues('/quiz?quiz_id=1');
+        state.quiz_id = data.id;
+        state.questions = data.questions;
+        state.currentQuestion = 0;
+        state.totalQuestions = data.questions.length;
+        state.totalCorrectAnswers = 0;
+        populateQuestion(state.questions[0]);
+        $(this).hide();
+        $(".answers").removeClass('hidden');
+    });
+
+    $( ".answer-card > .answer-text" ).click(function() {
+        let answerStatus = $(this).attr('correct');
+        if(answerStatus === '1'){
+            state.totalCorrectAnswers = state.totalCorrectAnswers + 1;
+        }
+        state.currentQuestion = state.currentQuestion + 1;
+
+        if (state.questions[state.currentQuestion] === undefined){
+            finishQuiz()
+        } else {
+            populateQuestion(state.questions[state.currentQuestion]);
+        }
+    });
+
+    function populateQuestion(question)
+    {
+        let questionDiv = $( ".question" );
+        questionDiv.text(question.question_text);
+
+        $( '.answer-text').each(function(element) {
+            $(this).attr('correct', question.answers[element].correct);
+            $(this).text(question.answers[element].text);
+        })
+    }
+
+    function finishQuiz()
+    {
+        $(".answers").addClass('hidden');
+        let questionDiv = $(".question");
+        questionDiv.text("Results");
+        $( '.results-text').text("You correctly answered " + state.totalCorrectAnswers + " out of " + state.totalQuestions + " total questions.");
+        $(".results").removeClass('hidden');
+    }
+
+    jQuery.extend({
+        getValues: function(url) {
+            var result = null;
+            $.ajax({
+                url: url,
+                type: 'get',
+                dataType: 'json',
+                async: false,
+                success: function(data) {
+                    result = data;
+                }
+            });
+            return result;
+        }
+    });
+</script>

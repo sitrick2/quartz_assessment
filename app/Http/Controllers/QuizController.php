@@ -45,12 +45,17 @@ class QuizController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Quiz  $quiz
-     * @return \Illuminate\Http\Response
+     * @param  Quiz  $quiz
+     * @return JsonResponse
      */
-    public function show(Quiz $quiz)
+    public function show() :JsonResponse
     {
-        //
+        if (request('quiz_id')){
+            $quiz = Quiz::find(request('quiz_id'));
+        } else {
+            $quiz = Quiz::first();
+        }
+        return response()->json($quiz->load('questions.answers'));
     }
 
     /**
