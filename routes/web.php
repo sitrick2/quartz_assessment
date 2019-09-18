@@ -15,4 +15,8 @@ Route::post('/quiz', 'QuizController@store');
 Route::patch('/quiz/{quiz}', 'QuizController@update');
 Route::delete('/quiz/{quiz}', 'QuizController@destroy');
 
+Route::post('/question/{quiz}', 'QuestionController@store');
 Route::patch('/question/{question}', 'QuestionController@update');
+Route::delete('/question/{question}', 'QuestionController@destroy');
+
+Route::patch('/answer/{answer}', 'AnswerController@update');

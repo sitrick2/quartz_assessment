@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Models\Answer;
+use App\Models\Question;
 use App\Models\Quiz;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -54,13 +56,11 @@ class QuizManagementTest extends TestCase
     /** @test */
     public function a_quiz_can_be_deleted() :void
     {
-        $this->withoutExceptionHandling();
-
         $quiz = $this->initializeTestQuiz();
 
         $request = $this->delete($quiz->path());
 
-        $this->assertCount(0, Quiz::all());
+        $request->assertJson(['success' => true]);
     }
 
     /** @test */
@@ -83,7 +83,6 @@ class QuizManagementTest extends TestCase
     /** @test */
     public function a_question_can_be_updated() :void
     {
-        $this->withoutExceptionHandling();
         $quiz = $this->initializeTestQuiz();
 
         $question = $quiz->questions->first();
@@ -104,6 +103,59 @@ class QuizManagementTest extends TestCase
         $request = $this->patch($question->path(), ['question_text' => null]);
 
         $request->assertSessionHasErrors('question_text');
+    }
+
+    /** @test */
+    public function a_question_can_be_created() :void
+    {
+        $quiz = $this->initializeTestQuiz();
+
+        $response = $this->post('/question/' . $quiz->id, [
+            'question_text' => 'New Question?'
+        ]);
+
+        $this->assertCount(2, $quiz->questions);
+    }
+
+    /** @test */
+    public function a_question_can_be_deleted() :void
+    {
+        $quiz = $this->initializeTestQuiz();
+
+        $response = $this->delete($quiz->questions->first()->path());
+
+        $response->assertJson(['success' => true]);
+    }
+
+    /** @test */
+    public function a_created_question_has_four_default_answers() :void
+    {
+        $quiz = $this->initializeTestQuiz();
+
+        $response = $this->post('/question/' . $quiz->id, [
+            'question_text' => 'New Question?'
+        ]);
+
+        $question = Question::find(json_decode($response->baseResponse->getContent(), true)['id']);
+
+        $this->assertCount(4, $question->answers);
+    }
+
+    /** @test */
+    public function an_answer_can_be_updated() :void
+    {
+        $quiz = $this->initializeTestQuiz();
+        $answer = $quiz->questions->first()->answers->first();
+
+        $response = $this->patch('/answer/' . $answer->id, [
+            'text' => 'Updated correct answer',
+            'correct' => true
+        ]);
+
+        $answer = Answer::find(json_decode($response->baseResponse->getContent(), true)['id']);
+
+        $this->assertEquals('Updated correct answer', $answer->text);
+        $this->assertEquals(true, $answer->correct);
     }
 
     /**
