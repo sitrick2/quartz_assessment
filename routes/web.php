@@ -12,13 +12,31 @@
 */
 Route::get('/', 'HomeController@index');
 
-Route::get('/quiz', 'QuizController@show');
+Route::get('/quiz', 'QuizController@show')->name('quiz.show');
+Route::get('/quiz', 'QuizController@create');
+Route::get('/quiz/{quiz}', 'QuizController@edit');
 Route::post('/quiz', 'QuizController@store');
-Route::patch('/quiz/{quiz}', 'QuizController@update');
-Route::delete('/quiz/{quiz}', 'QuizController@destroy');
+Route::patch('/quiz/{quiz}', 'QuizController@update')->name('quiz.update');
+Route::delete('/quiz/{quiz}', 'QuizController@destroy')->name('quiz.destroy');
 
 Route::post('/question/{quiz}', 'QuestionController@store');
 Route::patch('/question/{question}', 'QuestionController@update');
 Route::delete('/question/{question}', 'QuestionController@destroy');
 
 Route::patch('/answer/{answer}', 'AnswerController@update');
+
+Auth::routes();
+
+Route::get('/admin', function() {
+    return view('home');
+})->name('home')->middleware('auth');
+
+Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function () {
+    Route::get('/quizzes', 'AdminController@index')->name('quiz.index');
+    Route::get('/quiz', 'AdminController@showNewQuiz')->name('quiz.create');
+    Route::get('quiz/{quiz}', 'AdminController@showEditQuiz')->name('quiz.edit');
+    Route::post('quiz', 'AdminController@storeNewQuiz')->name('quiz.store');
+    Route::patch('quiz/{quiz}', 'AdminController@updateQuiz')->name('quiz.update');
+    Route::delete('quiz/{quiz}', 'AdminController@adminDeleteQuiz')->name('quiz.destroy');
+
+});

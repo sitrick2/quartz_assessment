@@ -12,7 +12,7 @@ class Quiz extends Model
     public static function boot() :void
     {
         parent::boot();
-        static::saved(static function($model) {
+        static::created(static function($model) {
             $question = new Question([
                 'question_text' => 'Default Question'
             ]);

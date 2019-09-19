@@ -13,7 +13,7 @@ class Question extends Model
     public static function boot() :void
     {
         parent::boot();
-        static::saved(static function($model) {
+        static::created(static function($model) {
             $answers = [];
 
             foreach ([0,1,2,3] as $answerIndex) {
@@ -25,11 +25,9 @@ class Question extends Model
                 $answers[$answerIndex]->save();
             }
 
-            $defaultCorrect = $answers[random_int(0, 3)];
-            $defaultCorrect->update([
-                'text' => 'Default Correct Answer',
-                'correct' => true
-            ]);
+            $correctAnswer = $model->answers[random_int(0, 3)];
+            $correctAnswer->correct = true;
+            $correctAnswer->save();
         });
 
         static::deleting(function($model) { // before delete() method call this

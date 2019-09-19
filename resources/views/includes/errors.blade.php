@@ -1,0 +1,17 @@
+@if (session('success'))
+    <div class="alert alert-success" style="margin: 5px">
+        {{ session('success') }}
+    </div>
+@endif
+
+@if ( count( $errors ) )
+    <div class="form-group">
+        <div class="alert alert-danger">
+
+            @foreach ( $errors->all() as $error )
+                <li>{{ $error }}</li>
+            @endforeach
+
+        </div>
+    </div>
+@endif

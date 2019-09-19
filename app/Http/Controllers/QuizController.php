@@ -6,6 +6,7 @@ use App\Models\Quiz;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\View\View;
 
 class QuizController extends Controller
 {
@@ -22,11 +23,11 @@ class QuizController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return View
      */
-    public function create() :JsonResponse
+    public function create() :View
     {
-
+        return view('admin.quiz_edit')->with(['quiz' => new Quiz()]);
     }
 
     /**
@@ -45,7 +46,6 @@ class QuizController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  Quiz  $quiz
      * @return JsonResponse
      */
     public function show() :JsonResponse
@@ -61,12 +61,12 @@ class QuizController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Quiz  $quiz
-     * @return \Illuminate\Http\Response
+     * @param  Quiz  $quiz
+     * @return View
      */
-    public function edit(Quiz $quiz)
+    public function edit(Quiz $quiz) :View
     {
-        //
+        return view('admin.quiz_edit')->with(['quiz' => $quiz]);
     }
 
     /**
@@ -78,6 +78,7 @@ class QuizController extends Controller
      */
     public function update(Request $request, Quiz $quiz) :JsonResponse
     {
+
         $quiz->update($this->validateRequest());
 
         return response()->json($quiz);
