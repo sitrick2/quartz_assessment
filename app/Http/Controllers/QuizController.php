@@ -17,17 +17,22 @@ class QuizController extends Controller
      */
     public function index()
     {
-        //
+
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return View
+     * @return JsonResponse
      */
-    public function create() :View
+    public function create() :JsonResponse
     {
-        return view('admin.quiz_edit')->with(['quiz' => new Quiz()]);
+        if (request('quiz_id')){
+            $quiz = Quiz::find(request('quiz_id'));
+        } else {
+            $quiz = Quiz::first();
+        }
+        return response()->json($quiz->load('questions.answers'));
     }
 
     /**
@@ -66,7 +71,7 @@ class QuizController extends Controller
      */
     public function edit(Quiz $quiz) :View
     {
-        return view('admin.quiz_edit')->with(['quiz' => $quiz]);
+
     }
 
     /**
@@ -78,7 +83,6 @@ class QuizController extends Controller
      */
     public function update(Request $request, Quiz $quiz) :JsonResponse
     {
-
         $quiz->update($this->validateRequest());
 
         return response()->json($quiz);

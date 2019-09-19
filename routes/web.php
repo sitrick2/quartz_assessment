@@ -12,12 +12,12 @@
 */
 Route::get('/', 'HomeController@index');
 
-Route::get('/quiz', 'QuizController@show')->name('quiz.show');
+Route::get('/quiz', 'QuizController@show');
 Route::get('/quiz', 'QuizController@create');
 Route::get('/quiz/{quiz}', 'QuizController@edit');
 Route::post('/quiz', 'QuizController@store');
-Route::patch('/quiz/{quiz}', 'QuizController@update')->name('quiz.update');
-Route::delete('/quiz/{quiz}', 'QuizController@destroy')->name('quiz.destroy');
+Route::patch('/quiz/{quiz}', 'QuizController@update');
+Route::delete('/quiz/{quiz}', 'QuizController@destroy');
 
 Route::post('/question/{quiz}', 'QuestionController@store');
 Route::patch('/question/{question}', 'QuestionController@update');
@@ -28,7 +28,7 @@ Route::patch('/answer/{answer}', 'AnswerController@update');
 Auth::routes();
 
 Route::get('/admin', function() {
-    return view('home');
+    return redirect('/admin/quizzes');
 })->name('home')->middleware('auth');
 
 Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function () {

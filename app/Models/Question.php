@@ -13,21 +13,17 @@ class Question extends Model
     public static function boot() :void
     {
         parent::boot();
-        static::created(static function($model) {
-            $answers = [];
-
-            foreach ([0,1,2,3] as $answerIndex) {
-                $answers[$answerIndex] = new Answer([
-                    'text' => 'Default Incorrect Answer',
-                    'correct' => false
-                ]);
-                $answers[$answerIndex]->question()->associate($model);
-                $answers[$answerIndex]->save();
+        static::saved(static function($model) {
+            if (($model->answers === null || $model->answers->count() === 0) && !isset(request()->all()['question'][-1])) {
+                $counter = 0;
+                while($counter < 4) {
+                    $model->answers()->create([
+                        'text' => 'Default Incorrect Answer',
+                        'correct' => time() % 2 === 0
+                    ]);
+                    $counter++;
+                }
             }
-
-            $correctAnswer = $model->answers[random_int(0, 3)];
-            $correctAnswer->correct = true;
-            $correctAnswer->save();
         });
 
         static::deleting(function($model) { // before delete() method call this

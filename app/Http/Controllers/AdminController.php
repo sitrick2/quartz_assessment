@@ -33,6 +33,7 @@ class AdminController extends Controller
 
     public function showEditQuiz(Quiz $quiz) :View
     {
+        dd('got here');
         return view('admin.quiz_edit')->with(['quiz' => $quiz]);
     }
 
@@ -46,7 +47,7 @@ class AdminController extends Controller
         foreach($quiz->questions as $question){
             if (isset($data['question'][$question->id])){
                 $question->update([
-                    'question_text' => $question['question_text']
+                    'question_text' => $data['question'][$question->id]['question_text']
                 ]);
 
                 foreach($question->answers as $answer){
@@ -62,7 +63,27 @@ class AdminController extends Controller
             }
         }
         $quiz->save();
-        return view('admin.quiz_edit')->with(['quiz' => $quiz]);
+
+        foreach ($data['question'] as $key => $inputQuestion){
+            if ($key < 0){
+                $question = new Question([
+                    'question_text' => $inputQuestion['question_text']
+                ]);
+                $question->quiz()->associate($quiz);
+                $question->save();
+
+                $answers = $inputQuestion['answers'];
+                foreach ($answers as $answer){
+                    $question->answers()->create([
+                        'text' => $answer['answer_text'],
+                        'correct' => $answer['correct'] ?? false
+                    ]);
+                }
+                $question->save();
+            }
+        }
+
+        return view('admin.quiz_edit')->with(['quiz' => $quiz->fresh()->load('questions.answers')]);
     }
 
     public function adminDeleteQuiz() :View

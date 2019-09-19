@@ -177,6 +177,7 @@
 
     $( ".start-quiz" ).click(function() {
         let data = $.getValues('/quiz?quiz_id=1');
+        console.log(data);
         state.quiz_id = data.id;
         state.questions = data.questions;
         state.currentQuestion = 0;
