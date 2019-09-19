@@ -12,7 +12,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-//        factory(Quiz::class, 1)->create();
+        factory(Quiz::class, 1)->create();
         factory(\App\Models\Question::class, 2)->create();
     }
 }
