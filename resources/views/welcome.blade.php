@@ -199,8 +199,8 @@
         $(".answers").removeClass('hidden');
     });
 
-    $( ".answer-card > .answer-text" ).click(function() {
-        let answerStatus = $(this).attr('correct');
+    $( ".answer-card" ).click(function() {
+        let answerStatus = $(this).find(".answer-text").attr('correct');
         if(answerStatus === '1'){
             state.totalCorrectAnswers = state.totalCorrectAnswers + 1;
         }
